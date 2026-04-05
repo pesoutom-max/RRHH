@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import type { Application } from "@/types";
@@ -33,6 +34,11 @@ export function ApplicationDetail({ applicationId }: { applicationId: string }) 
   return (
     <div className="grid">
       <section className="card" style={{ padding: "1.5rem" }}>
+        <div style={{ marginBottom: "1rem" }}>
+          <Link className="btn btn-ghost" href="/applications">
+            Volver a postulaciones
+          </Link>
+        </div>
         <div className="two-columns">
           <DetailItem label="Nombre" value={application.fullName} />
           <DetailItem label="Cargo" value={application.vacancyTitle} />
@@ -109,6 +115,10 @@ export function ApplicationDetail({ applicationId }: { applicationId: string }) 
           <DetailItem
             label="Principal fortaleza"
             value={application.answers.mainStrength}
+          />
+          <DetailItem
+            label="Puede llegar por sus propios medios"
+            value={application.answers.canCommuteIndependently ? "Sí" : "No"}
           />
         </article>
 

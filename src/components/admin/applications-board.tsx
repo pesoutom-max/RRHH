@@ -14,6 +14,7 @@ import { formatDate } from "@/lib/utils/format";
 export function ApplicationsBoard() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
+  const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({
     vacancyId: "",
     status: "",
@@ -28,6 +29,7 @@ export function ApplicationsBoard() {
       ([nextApplications, nextVacancies]) => {
         setApplications(nextApplications);
         setVacancies(nextVacancies);
+        setLoading(false);
       }
     );
   }, []);
@@ -140,26 +142,54 @@ export function ApplicationsBoard() {
       </section>
 
       <section className="card" style={{ padding: "1rem 1.25rem" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "1rem",
+            marginBottom: "1rem",
+            flexWrap: "wrap"
+          }}
+        >
+          <div>
+            <h2 style={{ margin: 0 }}>Postulaciones recibidas</h2>
+            <p className="muted" style={{ margin: 0 }}>
+              Revisa cada ficha desde el botón "Ver ficha".
+            </p>
+          </div>
+          <span className="pill">{filtered.length} registros</span>
+        </div>
+        {loading ? (
+          <div className="card" style={{ padding: "1.5rem" }}>
+            Cargando postulaciones...
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="card" style={{ padding: "1.5rem" }}>
+            No hay postulaciones que coincidan con los filtros.
+          </div>
+        ) : (
         <div className="table-wrap">
           <table>
             <thead>
               <tr>
                 <th>Nombre</th>
                 <th>Cargo</th>
+                <th>Email</th>
                 <th>Teléfono</th>
                 <th>Comuna</th>
                 <th>Fecha</th>
                 <th>Estado</th>
                 <th>Score</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               {filtered.map((item) => (
                 <tr key={item.id}>
-                  <td>
-                    <Link href={`/applications/${item.id}`}>{item.fullName}</Link>
-                  </td>
+                  <td>{item.fullName}</td>
                   <td>{item.vacancyTitle}</td>
+                  <td>{item.email}</td>
                   <td>{item.phone}</td>
                   <td>{item.comuna}</td>
                   <td>{formatDate(item.appliedAt)}</td>
@@ -169,13 +199,18 @@ export function ApplicationsBoard() {
                     </span>
                   </td>
                   <td>{item.score ?? "-"}</td>
+                  <td>
+                    <Link className="btn btn-secondary" href={`/applications/${item.id}`}>
+                      Ver ficha
+                    </Link>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
+        )}
       </section>
     </div>
   );
 }
-

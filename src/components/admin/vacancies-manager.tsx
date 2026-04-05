@@ -128,7 +128,23 @@ export function VacanciesManager() {
       </section>
 
       <section className="card" style={{ padding: "1rem 1.25rem" }}>
-        <h2>Vacantes registradas</h2>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: "1rem",
+            flexWrap: "wrap"
+          }}
+        >
+          <div>
+            <h2 style={{ margin: 0 }}>Vacantes registradas</h2>
+            <p className="muted" style={{ margin: 0 }}>
+              Puedes editar cualquier vacante para corregir datos faltantes o cambiar su estado.
+            </p>
+          </div>
+          <span className="pill">{vacancies.length} vacantes</span>
+        </div>
         <div className="table-wrap">
           <table>
             <thead>
@@ -195,4 +211,3 @@ function Field({
     </div>
   );
 }
-

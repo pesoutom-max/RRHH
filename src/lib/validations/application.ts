@@ -17,28 +17,24 @@ export const applicationSchema = z.object({
     .min(18, "Debes ser mayor de 18 años.")
     .max(80, "La edad parece incorrecta."),
   address: z.string().min(5, "Ingresa tu dirección."),
-  experienceSummary: z
-    .string()
-    .min(20, "Cuéntanos brevemente tu experiencia."),
-  lastJob: z.string().min(3, "Indica tu último trabajo."),
+  experienceSummary: z.string(),
+  lastJob: z.string(),
   availability: z.string().min(2, "Indica tu disponibilidad."),
   canWorkWeekends: z.boolean(),
   canStartImmediately: z.boolean(),
   hasCustomerServiceExperience: z.boolean(),
   hasFoodHandlingExperience: z.boolean(),
   transportToWork: z.string().min(3, "Indica cómo llegarías al trabajo."),
-  expectedSalary: z.string().min(2, "Indica tu pretensión de renta."),
-  motivation: z.string().min(20, "Cuéntanos por qué te interesa el cargo."),
-  strengths: z.string().min(10, "Indica al menos una fortaleza."),
-  weaknesses: z.string().min(10, "Indica al menos una debilidad."),
+  expectedSalary: z.string(),
+  motivation: z.string(),
+  strengths: z.string(),
+  weaknesses: z.string(),
   canWorkSaturdays: z.boolean(),
   canWorkSundaysOrHolidays: z.boolean(),
   canCommuteIndependently: z.boolean(),
-  availableFrom: z.string().min(2, "Indica desde cuándo podrías comenzar."),
-  interestReason: z.string().min(20, "Explica por qué te interesa el cargo."),
-  mainStrength: z
-    .string()
-    .min(10, "Indica tu principal fortaleza para este trabajo."),
+  availableFrom: z.string(),
+  interestReason: z.string(),
+  mainStrength: z.string(),
   consentAccepted: z
     .boolean()
     .refine((value) => value, "Debes aceptar el tratamiento de datos para enviar.")

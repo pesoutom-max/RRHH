@@ -50,6 +50,21 @@ const defaultValues: ApplicationFormValues = {
   consentAccepted: false
 };
 
+const optionalFieldLabels: Array<{
+  key: keyof ApplicationFormValues;
+  label: string;
+}> = [
+  { key: "experienceSummary", label: "Resumen de experiencia" },
+  { key: "lastJob", label: "Último trabajo" },
+  { key: "expectedSalary", label: "Pretensión de renta" },
+  { key: "motivation", label: "Motivación" },
+  { key: "strengths", label: "Fortalezas" },
+  { key: "weaknesses", label: "Debilidades" },
+  { key: "availableFrom", label: "Fecha disponible de inicio" },
+  { key: "interestReason", label: "Interés por el cargo" },
+  { key: "mainStrength", label: "Principal fortaleza" }
+];
+
 export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
@@ -87,6 +102,15 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
     [values]
   );
 
+  const missingOptionalFields = useMemo(
+    () =>
+      optionalFieldLabels.filter(({ key }) => {
+        const value = values[key];
+        return typeof value === "string" && value.trim().length === 0;
+      }),
+    [values]
+  );
+
   async function goNext() {
     const validByStep = {
       1: await trigger([
@@ -99,21 +123,10 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
         "address"
       ]),
       2: await trigger([
-        "experienceSummary",
-        "lastJob",
         "availability",
         "transportToWork",
-        "expectedSalary",
-        "motivation",
-        "strengths",
-        "weaknesses"
       ]),
-      3: await trigger([
-        "availableFrom",
-        "interestReason",
-        "mainStrength",
-        "consentAccepted"
-      ]),
+      3: await trigger(["consentAccepted"]),
       4: true
     };
 
@@ -341,6 +354,27 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
                 Si todo está correcto, presiona enviar. La postulación se guardará
                 realmente en la base de datos.
               </p>
+              {missingOptionalFields.length > 0 ? (
+                <div
+                  className="card"
+                  style={{
+                    padding: "1rem",
+                    border: "1px solid #f1c36d",
+                    background: "#fff8ea"
+                  }}
+                >
+                  <strong>Advertencia</strong>
+                  <p className="muted" style={{ marginBottom: "0.5rem" }}>
+                    Vas a postular con preguntas sin contestar. Puedes continuar,
+                    pero estos datos quedarán pendientes:
+                  </p>
+                  <ul style={{ margin: 0, paddingLeft: "1.25rem" }}>
+                    {missingOptionalFields.map((item) => (
+                      <li key={item.key}>{item.label}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
             </div>
 
             {submissionError ? (
@@ -380,7 +414,11 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
               </button>
             ) : (
               <button className="btn btn-primary" disabled={submitting} type="submit">
-                {submitting ? "Enviando postulación..." : "Enviar postulación"}
+                {submitting
+                  ? "Enviando postulación..."
+                  : missingOptionalFields.length > 0
+                    ? "Postular con datos pendientes"
+                    : "Enviar postulación"}
               </button>
             )}
           </div>
