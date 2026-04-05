@@ -15,17 +15,23 @@ export function useAdminSession() {
 
   useEffect(() => {
     return subscribeToAdminSession(async ({ uid: nextUid }) => {
-      setUid(nextUid);
+      try {
+        setUid(nextUid);
 
-      if (!nextUid) {
+        if (!nextUid) {
+          setProfile(null);
+          setLoading(false);
+          return;
+        }
+
+        const adminProfile = await getCurrentAdminProfile(nextUid);
+        setProfile(adminProfile);
+      } catch (error) {
+        console.error("No se pudo cargar la sesion administradora.", error);
         setProfile(null);
+      } finally {
         setLoading(false);
-        return;
       }
-
-      const adminProfile = await getCurrentAdminProfile(nextUid);
-      setProfile(adminProfile);
-      setLoading(false);
     });
   }, []);
 
@@ -36,4 +42,3 @@ export function useAdminSession() {
     isAdmin: Boolean(profile)
   };
 }
-

@@ -10,10 +10,15 @@ import { VacancyCard } from "./vacancy-card";
 export function PublicHome() {
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     getActiveVacancies()
       .then(setVacancies)
+      .catch((nextError) => {
+        console.error("No se pudieron cargar las vacantes activas.", nextError);
+        setError("No pudimos cargar las vacantes en este momento.");
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -67,6 +72,10 @@ export function PublicHome() {
             <div className="card" style={{ padding: "2rem" }}>
               Cargando vacantes...
             </div>
+          ) : error ? (
+            <div className="card" style={{ padding: "2rem" }}>
+              {error}
+            </div>
           ) : vacancies.length === 0 ? (
             <div className="card" style={{ padding: "2rem" }}>
               No hay vacantes activas publicadas todavía.
@@ -83,4 +92,3 @@ export function PublicHome() {
     </main>
   );
 }
-
