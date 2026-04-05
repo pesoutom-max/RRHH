@@ -1,0 +1,128 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/admin_users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admin_users/$(request.auth.uid)).data.role in ['owner', 'admin', 'recruiter'];
+    }
+
+    function isValidStatus(status) {
+      return status in ['new', 'reviewing', 'shortlisted', 'rejected', 'hired'];
+    }
+
+    function isValidVacancyStatus(status) {
+      return status in ['active', 'inactive', 'closed'];
+    }
+
+    function validApplicationCreate() {
+      return request.resource.data.keys().hasOnly([
+          'vacancyId',
+          'vacancyTitle',
+          'fullName',
+          'rut',
+          'phone',
+          'email',
+          'comuna',
+          'age',
+          'address',
+          'experienceSummary',
+          'lastJob',
+          'availability',
+          'canWorkWeekends',
+          'canStartImmediately',
+          'hasFoodHandlingExperience',
+          'hasCustomerServiceExperience',
+          'transportToWork',
+          'expectedSalary',
+          'motivation',
+          'strengths',
+          'weaknesses',
+          'cvFileUrl',
+          'answers',
+          'score',
+          'status',
+          'adminNotes',
+          'consentAccepted',
+          'appliedAt',
+          'updatedAt'
+        ])
+        && request.resource.data.vacancyId is string
+        && request.resource.data.vacancyTitle is string
+        && request.resource.data.fullName is string
+        && request.resource.data.rut is string
+        && request.resource.data.phone is string
+        && request.resource.data.email is string
+        && request.resource.data.comuna is string
+        && request.resource.data.age is int
+        && request.resource.data.address is string
+        && request.resource.data.experienceSummary is string
+        && request.resource.data.lastJob is string
+        && request.resource.data.availability is string
+        && request.resource.data.canWorkWeekends is bool
+        && request.resource.data.canStartImmediately is bool
+        && request.resource.data.hasFoodHandlingExperience is bool
+        && request.resource.data.hasCustomerServiceExperience is bool
+        && request.resource.data.transportToWork is string
+        && request.resource.data.expectedSalary is string
+        && request.resource.data.motivation is string
+        && request.resource.data.strengths is string
+        && request.resource.data.weaknesses is string
+        && request.resource.data.cvFileUrl is string
+        && request.resource.data.answers is map
+        && request.resource.data.consentAccepted == true
+        && request.resource.data.status == 'new'
+        && request.resource.data.adminNotes == ''
+        && request.resource.data.score == null
+        && request.resource.data.appliedAt == request.time
+        && request.resource.data.updatedAt == request.time;
+    }
+
+    match /vacancies/{vacancyId} {
+      allow read: if resource.data.status == 'active' || isAdmin();
+
+      // Solo administración crea o modifica vacantes.
+      allow create, update, delete: if isAdmin()
+        && request.resource.data.title is string
+        && request.resource.data.slug is string
+        && request.resource.data.description is string
+        && request.resource.data.responsibilities is list
+        && request.resource.data.requirements is list
+        && request.resource.data.schedule is string
+        && request.resource.data.location is string
+        && request.resource.data.salary is string
+        && isValidVacancyStatus(request.resource.data.status);
+    }
+
+    match /applications/{applicationId} {
+      // Los datos de postulaciones son privados y solo el equipo admin los puede leer.
+      allow read: if isAdmin();
+
+      // La creación pública se permite solo con la estructura exacta del formulario.
+      allow create: if validApplicationCreate();
+
+      // Actualizaciones reservadas para el panel admin.
+      allow update, delete: if isAdmin()
+        && isValidStatus(request.resource.data.status);
+    }
+
+    match /admin_users/{userId} {
+      // Cada admin puede leer su propio perfil; roles globales los ve cualquier admin.
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /notifications_log/{logId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /mail/{mailId} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

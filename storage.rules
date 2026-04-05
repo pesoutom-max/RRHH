@@ -1,0 +1,22 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    match /applications/{applicationId}/{allPaths=**} {
+      // Permite subir CVs sin login, pero solo con tamaño y tipos acotados.
+      allow create: if request.resource.size < 5 * 1024 * 1024
+        && (
+          request.resource.contentType.matches('application/pdf')
+          || request.resource.contentType.matches('application/msword')
+          || request.resource.contentType.matches('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        );
+
+      // La lectura queda reservada a usuarios autenticados del panel.
+      allow read, update, delete: if isSignedIn();
+    }
+  }
+}
