@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import type { Vacancy } from "@/types";
@@ -56,6 +56,7 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
   const [submitting, setSubmitting] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [cvFile, setCvFile] = useState<File | null>(null);
+  const submissionLockRef = useRef(false);
 
   const {
     register,
@@ -122,9 +123,10 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
   }
 
   async function onSubmit(formValues: ApplicationFormValues) {
-    if (submitting) return;
+    if (submissionLockRef.current) return;
 
     try {
+      submissionLockRef.current = true;
       setSubmitting(true);
       setSubmissionError(null);
       await submitApplication(vacancy, formValues, cvFile);
@@ -136,6 +138,7 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
           : "No fue posible enviar la postulación. Intenta nuevamente."
       );
     } finally {
+      submissionLockRef.current = false;
       setSubmitting(false);
     }
   }
