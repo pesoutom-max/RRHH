@@ -53,16 +53,17 @@ const defaultValues: ApplicationFormValues = {
 const optionalFieldLabels: Array<{
   key: keyof ApplicationFormValues;
   label: string;
+  step: 2 | 3;
 }> = [
-  { key: "experienceSummary", label: "Resumen de experiencia" },
-  { key: "lastJob", label: "Último trabajo" },
-  { key: "expectedSalary", label: "Pretensión de renta" },
-  { key: "motivation", label: "Motivación" },
-  { key: "strengths", label: "Fortalezas" },
-  { key: "weaknesses", label: "Debilidades" },
-  { key: "availableFrom", label: "Fecha disponible de inicio" },
-  { key: "interestReason", label: "Interés por el cargo" },
-  { key: "mainStrength", label: "Principal fortaleza" }
+  { key: "experienceSummary", label: "Resumen de experiencia", step: 2 },
+  { key: "lastJob", label: "Último trabajo", step: 2 },
+  { key: "expectedSalary", label: "Pretensión de renta", step: 2 },
+  { key: "motivation", label: "Motivación", step: 2 },
+  { key: "strengths", label: "Fortalezas", step: 2 },
+  { key: "weaknesses", label: "Debilidades", step: 2 },
+  { key: "availableFrom", label: "Fecha disponible de inicio", step: 3 },
+  { key: "interestReason", label: "Interés por el cargo", step: 3 },
+  { key: "mainStrength", label: "Principal fortaleza", step: 3 }
 ];
 
 export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
@@ -109,6 +110,14 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
         return typeof value === "string" && value.trim().length === 0;
       }),
     [values]
+  );
+
+  const missingOptionalFieldsByStep = useMemo(
+    () => ({
+      2: missingOptionalFields.filter((item) => item.step === 2),
+      3: missingOptionalFields.filter((item) => item.step === 3)
+    }),
+    [missingOptionalFields]
   );
 
   async function goNext() {
@@ -224,6 +233,9 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
 
         {currentStep === 2 ? (
           <div className="grid">
+            {missingOptionalFieldsByStep[2].length > 0 ? (
+              <StepWarning items={missingOptionalFieldsByStep[2]} />
+            ) : null}
             <Field
               label="Resumen de experiencia"
               error={errors.experienceSummary?.message}
@@ -284,6 +296,9 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
 
         {currentStep === 3 ? (
           <div className="grid">
+            {missingOptionalFieldsByStep[3].length > 0 ? (
+              <StepWarning items={missingOptionalFieldsByStep[3]} />
+            ) : null}
             <div className="two-columns">
               <Toggle
                 label="¿Puede trabajar sábados?"
@@ -342,6 +357,17 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
           <div className="grid">
             <div className="card" style={{ padding: "1.25rem" }}>
               <h2 style={{ marginTop: 0 }}>Revisa tu información</h2>
+              <p
+                className="muted"
+                style={{
+                  marginTop: 0,
+                  marginBottom: "1rem",
+                  fontSize: "1rem"
+                }}
+              >
+                Este es el paso final de revisión. Antes de enviar, vuelve atrás si
+                quieres completar o corregir información.
+              </p>
               <div className="two-columns">
                 {reviewItems.map(([label, value]) => (
                   <div key={label}>
@@ -471,5 +497,33 @@ function Toggle({
       />
       <span>{label}</span>
     </label>
+  );
+}
+
+function StepWarning({
+  items
+}: {
+  items: Array<{ key: keyof ApplicationFormValues; label: string }>;
+}) {
+  return (
+    <div
+      className="card"
+      style={{
+        padding: "1rem",
+        border: "1px solid #f1c36d",
+        background: "#fff8ea"
+      }}
+    >
+      <strong>Advertencia</strong>
+      <p className="muted" style={{ marginBottom: "0.5rem" }}>
+        Puedes seguir sin contestar estas preguntas, pero la postulación quedará
+        con información pendiente:
+      </p>
+      <ul style={{ margin: 0, paddingLeft: "1.25rem" }}>
+        {items.map((item) => (
+          <li key={item.key}>{item.label}</li>
+        ))}
+      </ul>
+    </div>
   );
 }
