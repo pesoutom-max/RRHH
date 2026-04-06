@@ -8,7 +8,10 @@ import {
   getDashboardStats,
   listAdminApplications
 } from "@/lib/firebase/firestore-services";
-import { APPLICATION_STATUS_LABELS } from "@/lib/constants/app";
+import {
+  APPLICATION_STATUS_CLASSNAMES,
+  APPLICATION_STATUS_LABELS
+} from "@/lib/constants/app";
 import { formatDate } from "@/lib/utils/format";
 
 export function DashboardContent() {
@@ -87,7 +90,7 @@ export function DashboardContent() {
                   <td>{item.vacancyTitle}</td>
                   <td>{formatDate(item.appliedAt)}</td>
                   <td>
-                    <span className="status-badge">
+                    <span className={APPLICATION_STATUS_CLASSNAMES[item.status]}>
                       {APPLICATION_STATUS_LABELS[item.status]}
                     </span>
                   </td>
@@ -101,4 +104,3 @@ export function DashboardContent() {
     </div>
   );
 }
-

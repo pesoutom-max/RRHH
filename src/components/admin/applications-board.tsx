@@ -9,7 +9,10 @@ import {
   listAdminApplications,
   listAdminVacancies
 } from "@/lib/firebase/firestore-services";
-import { APPLICATION_STATUS_LABELS } from "@/lib/constants/app";
+import {
+  APPLICATION_STATUS_CLASSNAMES,
+  APPLICATION_STATUS_LABELS
+} from "@/lib/constants/app";
 import { formatDate } from "@/lib/utils/format";
 
 export function ApplicationsBoard() {
@@ -215,7 +218,7 @@ export function ApplicationsBoard() {
                   <td>{item.comuna}</td>
                   <td>{formatDate(item.appliedAt)}</td>
                   <td>
-                    <span className="status-badge">
+                    <span className={APPLICATION_STATUS_CLASSNAMES[item.status]}>
                       {APPLICATION_STATUS_LABELS[item.status]}
                     </span>
                   </td>

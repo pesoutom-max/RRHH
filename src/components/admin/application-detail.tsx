@@ -11,7 +11,10 @@ import {
   getApplicationById,
   updateApplicationAdminState
 } from "@/lib/firebase/firestore-services";
-import { APPLICATION_STATUS_LABELS } from "@/lib/constants/app";
+import {
+  APPLICATION_STATUS_CLASSNAMES,
+  APPLICATION_STATUS_LABELS
+} from "@/lib/constants/app";
 import { formatDate } from "@/lib/utils/format";
 
 export function ApplicationDetail({ applicationId }: { applicationId: string }) {
@@ -65,10 +68,7 @@ export function ApplicationDetail({ applicationId }: { applicationId: string }) 
             value={application.expectedSalary}
           />
           <DetailItem label="Score" value={String(application.score ?? "-")} />
-          <DetailItem
-            label="Estado"
-            value={APPLICATION_STATUS_LABELS[application.status]}
-          />
+          <StatusDetailItem label="Estado" status={application.status} />
         </div>
       </section>
 
@@ -169,9 +169,8 @@ export function ApplicationDetail({ applicationId }: { applicationId: string }) 
                   adminNotes: notes,
                   status
                 });
-                const updated = await getApplicationById(applicationId);
-                setApplication(updated);
-                setSaving(false);
+                router.push("/applications");
+                router.refresh();
               }}
               type="button"
             >
@@ -213,6 +212,25 @@ function DetailItem({ label, value }: { label: string; value: string }) {
       <p className="muted" style={{ whiteSpace: "pre-wrap" }}>
         {value || "No informado"}
       </p>
+    </div>
+  );
+}
+
+function StatusDetailItem({
+  label,
+  status
+}: {
+  label: string;
+  status: Application["status"];
+}) {
+  return (
+    <div style={{ marginBottom: "1rem" }}>
+      <strong>{label}</strong>
+      <div style={{ marginTop: "0.45rem" }}>
+        <span className={APPLICATION_STATUS_CLASSNAMES[status]}>
+          {APPLICATION_STATUS_LABELS[status]}
+        </span>
+      </div>
     </div>
   );
 }
