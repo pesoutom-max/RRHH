@@ -30,19 +30,11 @@ service cloud.firestore {
           'email',
           'comuna',
           'age',
-          'address',
           'experienceSummary',
           'lastJob',
           'availability',
-          'canWorkWeekends',
-          'canStartImmediately',
-          'hasFoodHandlingExperience',
-          'hasCustomerServiceExperience',
           'transportToWork',
           'expectedSalary',
-          'motivation',
-          'strengths',
-          'weaknesses',
           'cvFileUrl',
           'answers',
           'score',
@@ -60,19 +52,11 @@ service cloud.firestore {
         && request.resource.data.email is string
         && request.resource.data.comuna is string
         && request.resource.data.age is int
-        && request.resource.data.address is string
         && request.resource.data.experienceSummary is string
         && request.resource.data.lastJob is string
         && request.resource.data.availability is string
-        && request.resource.data.canWorkWeekends is bool
-        && request.resource.data.canStartImmediately is bool
-        && request.resource.data.hasFoodHandlingExperience is bool
-        && request.resource.data.hasCustomerServiceExperience is bool
         && request.resource.data.transportToWork is string
         && request.resource.data.expectedSalary is string
-        && request.resource.data.motivation is string
-        && request.resource.data.strengths is string
-        && request.resource.data.weaknesses is string
         && request.resource.data.cvFileUrl is string
         && request.resource.data.answers is map
         && request.resource.data.consentAccepted == true

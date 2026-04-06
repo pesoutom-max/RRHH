@@ -28,25 +28,15 @@ const defaultValues: ApplicationFormValues = {
   email: "",
   comuna: "",
   age: 18,
-  address: "",
   experienceSummary: "",
   lastJob: "",
   availability: "",
-  canWorkWeekends: false,
-  canStartImmediately: false,
-  hasCustomerServiceExperience: false,
-  hasFoodHandlingExperience: false,
   transportToWork: "",
   expectedSalary: "",
-  motivation: "",
-  strengths: "",
-  weaknesses: "",
-  canWorkSaturdays: false,
   canWorkSundaysOrHolidays: false,
-  canCommuteIndependently: false,
   availableFrom: "",
-  interestReason: "",
-  mainStrength: "",
+  knowsBrandAndBusiness: "",
+  knowsInstagram: "",
   consentAccepted: false
 };
 
@@ -58,12 +48,9 @@ const optionalFieldLabels: Array<{
   { key: "experienceSummary", label: "Resumen de experiencia", step: 2 },
   { key: "lastJob", label: "Último trabajo", step: 2 },
   { key: "expectedSalary", label: "Pretensión de renta", step: 2 },
-  { key: "motivation", label: "Motivación", step: 2 },
-  { key: "strengths", label: "Fortalezas", step: 2 },
-  { key: "weaknesses", label: "Debilidades", step: 2 },
   { key: "availableFrom", label: "Fecha disponible de inicio", step: 3 },
-  { key: "interestReason", label: "Interés por el cargo", step: 3 },
-  { key: "mainStrength", label: "Principal fortaleza", step: 3 }
+  { key: "knowsBrandAndBusiness", label: "Conocimiento de la marca", step: 3 },
+  { key: "knowsInstagram", label: "Conocimiento del Instagram", step: 3 }
 ];
 
 export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
@@ -99,7 +86,11 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
       ["Edad", String(values.age)],
       ["Último trabajo", values.lastJob],
       ["Disponibilidad", values.availability],
-      ["Pretensión de renta", values.expectedSalary]
+      ["Pretensión de renta", values.expectedSalary],
+      ["Puede trabajar domingos y festivos", values.canWorkSundaysOrHolidays ? "Sí" : "No"],
+      ["Cuándo podría comenzar", values.availableFrom],
+      ["Nos conoce y sabe lo que hacemos", values.knowsBrandAndBusiness],
+      ["Sabe cuál es nuestro Instagram o si nos sigue", values.knowsInstagram]
     ],
     [values]
   );
@@ -129,8 +120,7 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
         "phone",
         "email",
         "comuna",
-        "age",
-        "address"
+        "age"
       ]),
       2: await trigger([
         "availability",
@@ -222,14 +212,11 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
             <Field label="Correo" error={errors.email?.message}>
               <input type="email" {...register("email")} />
             </Field>
-            <Field label="Comuna" error={errors.comuna?.message}>
+            <Field label="Comuna donde vive" error={errors.comuna?.message}>
               <input {...register("comuna")} />
             </Field>
             <Field label="Edad" error={errors.age?.message}>
               <input type="number" {...register("age", { valueAsNumber: true })} />
-            </Field>
-            <Field label="Dirección" error={errors.address?.message}>
-              <input {...register("address")} />
             </Field>
             <Field label="CV (PDF o Word)">
               <input
@@ -274,35 +261,6 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
                 <input {...register("expectedSalary")} />
               </Field>
             </div>
-            <div className="two-columns">
-              <Toggle
-                label="¿Puede trabajar fines de semana?"
-                registration={register("canWorkWeekends")}
-              />
-              <Toggle
-                label="¿Puede comenzar de inmediato?"
-                registration={register("canStartImmediately")}
-              />
-              <Toggle
-                label="¿Tiene experiencia en atención al cliente?"
-                registration={register("hasCustomerServiceExperience")}
-              />
-              <Toggle
-                label="¿Tiene experiencia en manipulación de alimentos?"
-                registration={register("hasFoodHandlingExperience")}
-              />
-            </div>
-            <Field label="Motivación" error={errors.motivation?.message}>
-              <textarea {...register("motivation")} />
-            </Field>
-            <div className="two-columns">
-              <Field label="Fortalezas" error={errors.strengths?.message}>
-                <textarea {...register("strengths")} />
-              </Field>
-              <Field label="Debilidades" error={errors.weaknesses?.message}>
-                <textarea {...register("weaknesses")} />
-              </Field>
-            </div>
           </div>
         ) : null}
 
@@ -311,37 +269,27 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
             {missingOptionalFieldsByStep[3].length > 0 ? (
               <StepWarning items={missingOptionalFieldsByStep[3]} />
             ) : null}
-            <div className="two-columns">
-              <Toggle
-                label="¿Puede trabajar sábados?"
-                registration={register("canWorkSaturdays")}
-              />
-              <Toggle
-                label="¿Puede trabajar domingos o festivos?"
-                registration={register("canWorkSundaysOrHolidays")}
-              />
-              <Toggle
-                label="¿Puede llegar por sus propios medios?"
-                registration={register("canCommuteIndependently")}
-              />
-            </div>
+            <Toggle
+              label="¿Puedes trabajar domingos y festivos?"
+              registration={register("canWorkSundaysOrHolidays")}
+            />
             <Field
-              label="¿Desde cuándo podría comenzar?"
+              label="¿Cuándo podrías comenzar?"
               error={errors.availableFrom?.message}
             >
               <input {...register("availableFrom")} />
             </Field>
             <Field
-              label="¿Por qué le interesa este cargo?"
-              error={errors.interestReason?.message}
+              label="¿Nos conoces, sabes de nosotros y lo que hacemos?"
+              error={errors.knowsBrandAndBusiness?.message}
             >
-              <textarea {...register("interestReason")} />
+              <textarea {...register("knowsBrandAndBusiness")} />
             </Field>
             <Field
-              label="¿Cuál es su principal fortaleza para este trabajo?"
-              error={errors.mainStrength?.message}
+              label="¿Sabés cuál es nuestro Instagram, nos sigues?"
+              error={errors.knowsInstagram?.message}
             >
-              <textarea {...register("mainStrength")} />
+              <textarea {...register("knowsInstagram")} />
             </Field>
             <label
               style={{

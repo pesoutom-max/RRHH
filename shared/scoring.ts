@@ -16,22 +16,16 @@ const nearbyCommunes = new Set([
 export function calculateApplicationScore(
   application: Pick<
     Application,
-    | "canWorkWeekends"
-    | "hasCustomerServiceExperience"
-    | "hasFoodHandlingExperience"
-    | "canStartImmediately"
     | "comuna"
-    | "motivation"
+    | "availability"
+    | "experienceSummary"
   >
 ): number {
   let score = 0;
 
-  if (application.canWorkWeekends) score += 2;
-  if (application.hasCustomerServiceExperience) score += 2;
-  if (application.hasFoodHandlingExperience) score += 2;
-  if (application.canStartImmediately) score += 2;
   if (nearbyCommunes.has(normalize(application.comuna))) score += 1;
-  if (application.motivation.trim().length >= 80) score += 1;
+  if (application.availability.trim().length >= 3) score += 2;
+  if (application.experienceSummary.trim().length >= 40) score += 2;
 
   return score;
 }
@@ -43,4 +37,3 @@ function normalize(value: string) {
     .toLowerCase()
     .trim();
 }
-

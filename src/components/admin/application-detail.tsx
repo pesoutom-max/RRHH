@@ -46,28 +46,11 @@ export function ApplicationDetail({ applicationId }: { applicationId: string }) 
           <DetailItem label="Correo" value={application.email} />
           <DetailItem label="Teléfono" value={application.phone} />
           <DetailItem label="Comuna" value={application.comuna} />
-          <DetailItem label="Dirección" value={application.address} />
           <DetailItem label="Edad" value={String(application.age)} />
           <DetailItem label="Disponibilidad" value={application.availability} />
           <DetailItem
             label="Postulada el"
             value={formatDate(application.appliedAt)}
-          />
-          <DetailItem
-            label="Experiencia atención al cliente"
-            value={application.hasCustomerServiceExperience ? "Sí" : "No"}
-          />
-          <DetailItem
-            label="Experiencia en alimentos"
-            value={application.hasFoodHandlingExperience ? "Sí" : "No"}
-          />
-          <DetailItem
-            label="Inicio inmediato"
-            value={application.canStartImmediately ? "Sí" : "No"}
-          />
-          <DetailItem
-            label="Trabaja fines de semana"
-            value={application.canWorkWeekends ? "Sí" : "No"}
           />
           <DetailItem
             label="Cómo llegaría"
@@ -93,13 +76,6 @@ export function ApplicationDetail({ applicationId }: { applicationId: string }) 
             value={application.experienceSummary}
           />
           <DetailItem label="Último trabajo" value={application.lastJob} />
-          <DetailItem label="Motivación" value={application.motivation} />
-          <DetailItem label="Fortalezas" value={application.strengths} />
-          <DetailItem label="Debilidades" value={application.weaknesses} />
-          <DetailItem
-            label="Puede trabajar sábados"
-            value={application.answers.canWorkSaturdays ? "Sí" : "No"}
-          />
           <DetailItem
             label="Puede trabajar domingos o festivos"
             value={application.answers.canWorkSundaysOrHolidays ? "Sí" : "No"}
@@ -109,16 +85,12 @@ export function ApplicationDetail({ applicationId }: { applicationId: string }) 
             value={application.answers.availableFrom}
           />
           <DetailItem
-            label="Interés por el cargo"
-            value={application.answers.interestReason}
+            label="Conoce la marca y lo que hacemos"
+            value={application.answers.knowsBrandAndBusiness}
           />
           <DetailItem
-            label="Principal fortaleza"
-            value={application.answers.mainStrength}
-          />
-          <DetailItem
-            label="Puede llegar por sus propios medios"
-            value={application.answers.canCommuteIndependently ? "Sí" : "No"}
+            label="Conoce o sigue el Instagram"
+            value={application.answers.knowsInstagram}
           />
         </article>
 

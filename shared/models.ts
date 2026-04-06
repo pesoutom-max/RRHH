@@ -23,14 +23,10 @@ export interface Vacancy {
 }
 
 export interface ApplicationAnswers {
-  canWorkSaturdays: boolean;
   canWorkSundaysOrHolidays: boolean;
-  hasCustomerServiceExperience: boolean;
-  hasFoodHandlingExperience: boolean;
-  canCommuteIndependently: boolean;
   availableFrom: string;
-  interestReason: string;
-  mainStrength: string;
+  knowsBrandAndBusiness: string;
+  knowsInstagram: string;
 }
 
 export interface Application {
@@ -43,19 +39,11 @@ export interface Application {
   email: string;
   comuna: string;
   age: number;
-  address: string;
   experienceSummary: string;
   lastJob: string;
   availability: string;
-  canWorkWeekends: boolean;
-  canStartImmediately: boolean;
-  hasFoodHandlingExperience: boolean;
-  hasCustomerServiceExperience: boolean;
   transportToWork: string;
   expectedSalary: string;
-  motivation: string;
-  strengths: string;
-  weaknesses: string;
   cvFileUrl: string;
   answers: ApplicationAnswers;
   score: number | null;
@@ -83,4 +71,3 @@ export interface NotificationLog {
   status: "queued" | "sent" | "failed";
   errorMessage: string;
 }
-
