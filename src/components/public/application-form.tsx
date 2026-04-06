@@ -69,6 +69,7 @@ const optionalFieldLabels: Array<{
 export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
+  const [reviewConfirmed, setReviewConfirmed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [cvFile, setCvFile] = useState<File | null>(null);
@@ -140,12 +141,23 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
     };
 
     if (validByStep[currentStep as keyof typeof validByStep]) {
+      if (currentStep === 3) {
+        setReviewConfirmed(false);
+        setSubmissionError(null);
+      }
       setCurrentStep((value) => Math.min(value + 1, 4));
     }
   }
 
   async function onSubmit(formValues: ApplicationFormValues) {
+    if (currentStep !== 4) return;
     if (submissionLockRef.current) return;
+    if (!reviewConfirmed) {
+      setSubmissionError(
+        "Confirma en el paso final que revisaste la postulación antes de enviarla."
+      );
+      return;
+    }
 
     try {
       submissionLockRef.current = true;
@@ -401,6 +413,25 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
                   </ul>
                 </div>
               ) : null}
+              <label
+                style={{
+                  display: "flex",
+                  gap: "0.7rem",
+                  alignItems: "flex-start",
+                  padding: "1rem",
+                  border: "1px solid var(--line)",
+                  borderRadius: 16
+                }}
+              >
+                <input
+                  checked={reviewConfirmed}
+                  onChange={(event) => setReviewConfirmed(event.target.checked)}
+                  type="checkbox"
+                />
+                <span>
+                  Confirmo que revisé esta postulación y quiero enviarla ahora.
+                </span>
+              </label>
             </div>
 
             {submissionError ? (
@@ -427,7 +458,10 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
             {currentStep > 1 ? (
               <button
                 className="btn btn-ghost"
-                onClick={() => setCurrentStep((value) => Math.max(1, value - 1))}
+                onClick={() => {
+                  setSubmissionError(null);
+                  setCurrentStep((value) => Math.max(1, value - 1));
+                }}
                 type="button"
               >
                 Paso anterior
@@ -439,7 +473,11 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
                 Continuar
               </button>
             ) : (
-              <button className="btn btn-primary" disabled={submitting} type="submit">
+              <button
+                className="btn btn-primary"
+                disabled={submitting || !reviewConfirmed}
+                type="submit"
+              >
                 {submitting
                   ? "Enviando postulación..."
                   : missingOptionalFields.length > 0
