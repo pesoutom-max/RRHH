@@ -22,12 +22,8 @@ export function PublicHeader() {
           <Link className="pill" href="/">
             Vacantes activas
           </Link>
-          <Link className="pill" href="/login">
-            Administrador
-          </Link>
         </nav>
       </div>
     </header>
   );
 }
-

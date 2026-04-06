@@ -16,6 +16,17 @@ import {
   type VacancyFormValues
 } from "@/lib/validations/vacancy";
 
+const EMPTY_VACANCY_VALUES: VacancyFormValues = {
+  title: "",
+  description: "",
+  responsibilitiesText: "",
+  requirementsText: "",
+  schedule: "",
+  location: "",
+  salary: "",
+  status: "active"
+};
+
 export function VacanciesManager() {
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
   const [editing, setEditing] = useState<Vacancy | null>(null);
@@ -29,16 +40,7 @@ export function VacanciesManager() {
     formState: { errors }
   } = useForm<VacancyFormValues>({
     resolver: zodResolver(vacancySchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      responsibilitiesText: "",
-      requirementsText: "",
-      schedule: "",
-      location: "",
-      salary: "",
-      status: "active"
-    }
+    defaultValues: EMPTY_VACANCY_VALUES
   });
 
   async function refresh() {
@@ -63,7 +65,7 @@ export function VacanciesManager() {
 
       if (editing?.id === vacancy.id) {
         setEditing(null);
-        reset();
+        reset(EMPTY_VACANCY_VALUES);
       }
     } finally {
       setDeletingId("");
@@ -89,9 +91,9 @@ export function VacanciesManager() {
             } else {
               await createVacancy(values);
             }
-            await refresh();
             setEditing(null);
-            reset();
+            reset(EMPTY_VACANCY_VALUES);
+            await refresh();
             setSubmitting(false);
           })}
         >
@@ -142,7 +144,7 @@ export function VacanciesManager() {
                 className="btn btn-ghost"
                 onClick={() => {
                   setEditing(null);
-                  reset();
+                  reset(EMPTY_VACANCY_VALUES);
                 }}
                 type="button"
               >
