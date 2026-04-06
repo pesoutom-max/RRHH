@@ -67,7 +67,12 @@ export async function getVacancyById(vacancyId: string) {
 
 export async function getVacancyBySlug(slug: string) {
   const snapshot = await getDocs(
-    query(vacanciesCollection, where("slug", "==", slug), limit(1))
+    query(
+      vacanciesCollection,
+      where("slug", "==", slug),
+      where("status", "==", "active"),
+      limit(1)
+    )
   );
 
   if (snapshot.empty) return null;
