@@ -311,6 +311,23 @@ th {
   color: #1d4ed8;
 }
 
+.application-name-cell {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.cv-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.28rem 0.6rem;
+  border-radius: 999px;
+  background: #e8f7ee;
+  color: #12633b;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
 .two-columns {
   display: grid;
   gap: 1rem;

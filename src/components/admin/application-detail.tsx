@@ -68,6 +68,10 @@ export function ApplicationDetail({ applicationId }: { applicationId: string }) 
             value={application.expectedSalary}
           />
           <DetailItem label="Score" value={String(application.score ?? "-")} />
+          <DetailItem
+            label="Curriculum"
+            value={application.cvFileUrl ? "Adjunto" : "No adjunto"}
+          />
           <StatusDetailItem label="Estado" status={application.status} />
         </div>
       </section>

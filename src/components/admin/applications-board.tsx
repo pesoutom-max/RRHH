@@ -211,7 +211,14 @@ export function ApplicationsBoard() {
             <tbody>
               {filtered.map((item) => (
                 <tr key={item.id}>
-                  <td>{item.fullName}</td>
+                  <td>
+                    <div className="application-name-cell">
+                      <span>{item.fullName}</span>
+                      {item.cvFileUrl ? (
+                        <span className="cv-badge">CV adjunto</span>
+                      ) : null}
+                    </div>
+                  </td>
                   <td>{item.vacancyTitle}</td>
                   <td>{item.email}</td>
                   <td>{item.phone}</td>

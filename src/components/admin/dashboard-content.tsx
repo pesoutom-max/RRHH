@@ -85,7 +85,12 @@ export function DashboardContent() {
               {recent.map((item) => (
                 <tr key={item.id}>
                   <td>
-                    <Link href={`/applications/${item.id}`}>{item.fullName}</Link>
+                    <div className="application-name-cell">
+                      <Link href={`/applications/${item.id}`}>{item.fullName}</Link>
+                      {item.cvFileUrl ? (
+                        <span className="cv-badge">CV adjunto</span>
+                      ) : null}
+                    </div>
                   </td>
                   <td>{item.vacancyTitle}</td>
                   <td>{formatDate(item.appliedAt)}</td>
