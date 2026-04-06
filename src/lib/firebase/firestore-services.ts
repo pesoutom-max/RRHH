@@ -260,7 +260,7 @@ export async function deleteVacancy(vacancyId: string) {
 
 export async function updateApplicationAdminState(
   applicationId: string,
-  updates: Partial<Pick<Application, "adminNotes" | "status">>
+  updates: Partial<Pick<Application, "adminNotes" | "score" | "status">>
 ) {
   await updateDoc(doc(applicationsCollection, applicationId), {
     ...updates,

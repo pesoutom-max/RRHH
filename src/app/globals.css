@@ -328,6 +328,25 @@ th {
   font-weight: 700;
 }
 
+.score-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.score-badge--high {
+  background: #dbf6e5;
+  border-color: #a9e8bf;
+  color: #12633b;
+}
+
 .two-columns {
   display: grid;
   gap: 1rem;

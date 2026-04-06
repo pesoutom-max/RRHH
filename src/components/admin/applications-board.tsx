@@ -245,7 +245,9 @@ export function ApplicationsBoard() {
                       {APPLICATION_STATUS_LABELS[item.status]}
                     </span>
                   </td>
-                  <td>{item.score ?? "-"}</td>
+                  <td>
+                    <ScoreBadge score={item.score} />
+                  </td>
                   <td>
                     <div
                       style={{
@@ -277,5 +279,17 @@ export function ApplicationsBoard() {
         )}
       </section>
     </div>
+  );
+}
+
+function ScoreBadge({ score }: { score: number | null }) {
+  if (typeof score !== "number") {
+    return <>-</>;
+  }
+
+  return (
+    <span className={score >= 8 ? "score-badge score-badge--high" : "score-badge"}>
+      {score}/10
+    </span>
   );
 }

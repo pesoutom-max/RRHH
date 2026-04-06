@@ -23,6 +23,7 @@ export function ApplicationDetail({ applicationId }: { applicationId: string }) 
   const [application, setApplication] = useState<Application | null>(null);
   const [notes, setNotes] = useState("");
   const [status, setStatus] = useState<Application["status"]>("new");
+  const [score, setScore] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [cvLoading, setCvLoading] = useState(false);
   const [cvVerified, setCvVerified] = useState(false);
@@ -34,6 +35,11 @@ export function ApplicationDetail({ applicationId }: { applicationId: string }) 
       setApplication(item);
       setNotes(item?.adminNotes ?? "");
       setStatus(item?.status ?? "new");
+      setScore(
+        typeof item?.score === "number" && item.score >= 1 && item.score <= 10
+          ? item.score
+          : null
+      );
       setCvError(null);
 
       if (item?.cvFileUrl) {
@@ -82,7 +88,7 @@ export function ApplicationDetail({ applicationId }: { applicationId: string }) 
             label="Pretensión de renta"
             value={application.expectedSalary}
           />
-          <DetailItem label="Score" value={String(application.score ?? "-")} />
+          <ScoreDetailItem score={application.score} />
           <DetailItem
             label="Curriculum"
             value={
@@ -142,6 +148,23 @@ export function ApplicationDetail({ applicationId }: { applicationId: string }) 
           </div>
 
           <div className="field">
+            <label>Score manual</label>
+            <select
+              onChange={(event) =>
+                setScore(event.target.value ? Number(event.target.value) : null)
+              }
+              value={score ?? ""}
+            >
+              <option value="">Sin score</option>
+              {Array.from({ length: 10 }, (_, index) => index + 1).map((value) => (
+                <option key={value} value={value}>
+                  {value} {value === 1 ? "(peor)" : value === 10 ? "(mejor)" : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="field">
             <label>Notas internas</label>
             <textarea onChange={(event) => setNotes(event.target.value)} value={notes} />
           </div>
@@ -190,6 +213,7 @@ export function ApplicationDetail({ applicationId }: { applicationId: string }) 
                 setSaving(true);
                 await updateApplicationAdminState(applicationId, {
                   adminNotes: notes,
+                  score,
                   status
                 });
                 router.push("/applications");
@@ -258,6 +282,27 @@ function StatusDetailItem({
         <span className={APPLICATION_STATUS_CLASSNAMES[status]}>
           {APPLICATION_STATUS_LABELS[status]}
         </span>
+      </div>
+    </div>
+  );
+}
+
+function ScoreDetailItem({ score }: { score: number | null }) {
+  const hasHighScore = typeof score === "number" && score >= 8;
+
+  return (
+    <div style={{ marginBottom: "1rem" }}>
+      <strong>Score</strong>
+      <div style={{ marginTop: "0.45rem" }}>
+        {typeof score === "number" ? (
+          <span className={hasHighScore ? "score-badge score-badge--high" : "score-badge"}>
+            {score}/10
+          </span>
+        ) : (
+          <p className="muted" style={{ margin: 0 }}>
+            No informado
+          </p>
+        )}
       </div>
     </div>
   );

@@ -20,6 +20,10 @@ service cloud.firestore {
       return status in ['active', 'inactive', 'closed'];
     }
 
+    function isValidScore(score) {
+      return score == null || (score is int && score >= 0 && score <= 10);
+    }
+
     function validApplicationCreate() {
       return request.resource.data.keys().hasOnly([
           'vacancyId',
@@ -93,7 +97,8 @@ service cloud.firestore {
 
       // Actualizaciones reservadas para el panel admin.
       allow update: if isAdmin()
-        && isValidStatus(request.resource.data.status);
+        && isValidStatus(request.resource.data.status)
+        && isValidScore(request.resource.data.score);
       allow delete: if isAdmin();
     }
 
