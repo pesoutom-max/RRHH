@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 import type { Application } from "@/types";
 import {
+  checkCvFilesExist,
   getDashboardStats,
   listAdminApplications
 } from "@/lib/firebase/firestore-services";
@@ -24,14 +25,31 @@ export function DashboardContent() {
     hired: number;
   } | null>(null);
   const [recent, setRecent] = useState<Application[]>([]);
+  const [cvAvailability, setCvAvailability] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    Promise.all([getDashboardStats(), listAdminApplications()]).then(
-      ([nextStats, nextApplications]) => {
-        setStats(nextStats);
-        setRecent(nextApplications.slice(0, 8));
+    async function load() {
+      const [nextStats, nextApplications] = await Promise.all([
+        getDashboardStats(),
+        listAdminApplications()
+      ]);
+
+      const nextRecent = nextApplications.slice(0, 8);
+
+      try {
+        const nextCvAvailability = await checkCvFilesExist(
+          nextRecent.map((item) => item.cvFileUrl)
+        );
+        setCvAvailability(nextCvAvailability);
+      } catch {
+        setCvAvailability({});
       }
-    );
+
+      setStats(nextStats);
+      setRecent(nextRecent);
+    }
+
+    load();
   }, []);
 
   if (!stats) {
@@ -87,7 +105,7 @@ export function DashboardContent() {
                   <td>
                     <div className="application-name-cell">
                       <Link href={`/applications/${item.id}`}>{item.fullName}</Link>
-                      {item.cvFileUrl ? (
+                      {item.cvFileUrl && cvAvailability[item.cvFileUrl] ? (
                         <span className="cv-badge">CV adjunto</span>
                       ) : null}
                     </div>

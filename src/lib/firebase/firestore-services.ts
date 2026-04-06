@@ -150,6 +150,65 @@ export async function signOutAdmin() {
   return signOut(auth);
 }
 
+export async function checkCvFilesExist(filePaths: string[]) {
+  const uniquePaths = [...new Set(filePaths.filter(Boolean))];
+
+  if (uniquePaths.length === 0) {
+    return {} as Record<string, boolean>;
+  }
+
+  const token = await auth.currentUser?.getIdToken();
+
+  if (!token) {
+    throw new Error("No fue posible validar los CV adjuntos.");
+  }
+
+  const response = await fetch("/api/admin/cv-status", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ filePaths: uniquePaths })
+  });
+
+  const data = (await response.json()) as {
+    files?: Record<string, boolean>;
+    error?: string;
+  };
+
+  if (!response.ok) {
+    throw new Error(data.error || "No fue posible validar los CV adjuntos.");
+  }
+
+  return data.files ?? {};
+}
+
+export async function getSignedCvUrl(filePath: string) {
+  const token = await auth.currentUser?.getIdToken();
+
+  if (!token) {
+    throw new Error("No autorizado.");
+  }
+
+  const response = await fetch("/api/admin/cv-url", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ filePath })
+  });
+
+  const data = (await response.json()) as { url?: string; error?: string };
+
+  if (!response.ok || !data.url) {
+    throw new Error(data.error || "No fue posible obtener el CV.");
+  }
+
+  return data.url;
+}
+
 export async function getCurrentAdminProfile(userId: string) {
   const snapshot = await getDoc(doc(adminUsersCollection, userId));
   if (!snapshot.exists()) return null;

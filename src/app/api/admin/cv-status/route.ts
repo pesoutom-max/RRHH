@@ -20,36 +20,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No autorizado." }, { status: 401 });
     }
 
-    const body = (await request.json()) as { filePath?: string };
+    const body = (await request.json()) as { filePaths?: string[] };
+    const filePaths = [...new Set((body.filePaths ?? []).filter(Boolean))];
 
-    if (!body.filePath) {
-      return NextResponse.json(
-        { error: "Falta filePath del CV." },
-        { status: 400 }
-      );
-    }
+    const results = await Promise.all(
+      filePaths.map(async (filePath) => {
+        const [exists] = await adminStorage.bucket().file(filePath).exists();
+        return [filePath, exists] as const;
+      })
+    );
 
-    const file = adminStorage.bucket().file(body.filePath);
-    const [exists] = await file.exists();
-
-    if (!exists) {
-      return NextResponse.json(
-        { error: "El archivo del CV no existe en Storage." },
-        { status: 404 }
-      );
-    }
-
-    const [url] = await file.getSignedUrl({
-        action: "read",
-        expires: Date.now() + 1000 * 60 * 10
-      });
-
-    return NextResponse.json({ url });
+    return NextResponse.json({
+      files: Object.fromEntries(results)
+    });
   } catch (error) {
     return NextResponse.json(
       {
         error:
-          error instanceof Error ? error.message : "No fue posible obtener el CV."
+          error instanceof Error
+            ? error.message
+            : "No fue posible validar los CV adjuntos."
       },
       { status: 500 }
     );

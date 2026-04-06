@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import type { Application } from "@/types";
-import { auth } from "@/lib/firebase/client";
 import {
+  checkCvFilesExist,
   deleteApplication,
+  getSignedCvUrl,
   getApplicationById,
   updateApplicationAdminState
 } from "@/lib/firebase/firestore-services";
@@ -24,13 +25,27 @@ export function ApplicationDetail({ applicationId }: { applicationId: string }) 
   const [status, setStatus] = useState<Application["status"]>("new");
   const [saving, setSaving] = useState(false);
   const [cvLoading, setCvLoading] = useState(false);
+  const [cvVerified, setCvVerified] = useState(false);
+  const [cvError, setCvError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    getApplicationById(applicationId).then((item) => {
+    getApplicationById(applicationId).then(async (item) => {
       setApplication(item);
       setNotes(item?.adminNotes ?? "");
       setStatus(item?.status ?? "new");
+      setCvError(null);
+
+      if (item?.cvFileUrl) {
+        try {
+          const availability = await checkCvFilesExist([item.cvFileUrl]);
+          setCvVerified(Boolean(availability[item.cvFileUrl]));
+        } catch {
+          setCvVerified(false);
+        }
+      } else {
+        setCvVerified(false);
+      }
     });
   }, [applicationId]);
 
@@ -70,7 +85,13 @@ export function ApplicationDetail({ applicationId }: { applicationId: string }) 
           <DetailItem label="Score" value={String(application.score ?? "-")} />
           <DetailItem
             label="Curriculum"
-            value={application.cvFileUrl ? "Adjunto" : "No adjunto"}
+            value={
+              application.cvFileUrl
+                ? cvVerified
+                  ? "Adjunto verificado"
+                  : "No disponible"
+                : "No adjunto"
+            }
           />
           <StatusDetailItem label="Estado" status={application.status} />
         </div>
@@ -136,28 +157,26 @@ export function ApplicationDetail({ applicationId }: { applicationId: string }) 
             >
               Copiar email
             </button>
-            {application.cvFileUrl ? (
+            {cvVerified && application.cvFileUrl ? (
               <button
                 className="btn btn-secondary"
                 disabled={cvLoading}
                 onClick={async () => {
                   setCvLoading(true);
-                  const token = await auth.currentUser?.getIdToken();
-                  const response = await fetch("/api/admin/cv-url", {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ filePath: application.cvFileUrl })
-                  });
-                  const data = (await response.json()) as { url?: string };
+                  setCvError(null);
 
-                  if (data.url) {
-                    window.open(data.url, "_blank", "noopener,noreferrer");
+                  try {
+                    const url = await getSignedCvUrl(application.cvFileUrl);
+                    window.open(url, "_blank", "noopener,noreferrer");
+                  } catch (error) {
+                    setCvError(
+                      error instanceof Error
+                        ? error.message
+                        : "No fue posible abrir el CV."
+                    );
+                  } finally {
+                    setCvLoading(false);
                   }
-
-                  setCvLoading(false);
                 }}
                 type="button"
               >
@@ -203,6 +222,11 @@ export function ApplicationDetail({ applicationId }: { applicationId: string }) 
               {deleting ? "Eliminando..." : "Eliminar postulación"}
             </button>
           </div>
+          {cvError ? (
+            <div className="field-error" style={{ marginTop: "0.75rem" }}>
+              {cvError}
+            </div>
+          ) : null}
         </article>
       </section>
     </div>

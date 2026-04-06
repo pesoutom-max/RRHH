@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import type { Application, Vacancy } from "@/types";
 import {
+  checkCvFilesExist,
   deleteApplication,
   listAdminApplications,
   listAdminVacancies
@@ -20,6 +21,7 @@ export function ApplicationsBoard() {
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState("");
+  const [cvAvailability, setCvAvailability] = useState<Record<string, boolean>>({});
   const [filters, setFilters] = useState({
     vacancyId: "",
     status: "",
@@ -30,13 +32,27 @@ export function ApplicationsBoard() {
   });
 
   useEffect(() => {
-    Promise.all([listAdminApplications(), listAdminVacancies()]).then(
-      ([nextApplications, nextVacancies]) => {
+    async function load() {
+      const [nextApplications, nextVacancies] = await Promise.all([
+        listAdminApplications(),
+        listAdminVacancies()
+      ]);
+
+      try {
+        const nextCvAvailability = await checkCvFilesExist(
+          nextApplications.map((item) => item.cvFileUrl)
+        );
+        setCvAvailability(nextCvAvailability);
+      } catch {
+        setCvAvailability({});
+      }
+
         setApplications(nextApplications);
         setVacancies(nextVacancies);
         setLoading(false);
-      }
-    );
+    }
+
+    load();
   }, []);
 
   const filtered = useMemo(() => {
@@ -214,7 +230,7 @@ export function ApplicationsBoard() {
                   <td>
                     <div className="application-name-cell">
                       <span>{item.fullName}</span>
-                      {item.cvFileUrl ? (
+                      {item.cvFileUrl && cvAvailability[item.cvFileUrl] ? (
                         <span className="cv-badge">CV adjunto</span>
                       ) : null}
                     </div>
