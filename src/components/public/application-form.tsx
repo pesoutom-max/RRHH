@@ -269,6 +269,22 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
             {missingOptionalFieldsByStep[3].length > 0 ? (
               <StepWarning items={missingOptionalFieldsByStep[3]} />
             ) : null}
+            {!values.consentAccepted ? (
+              <div
+                className="card"
+                style={{
+                  padding: "1rem",
+                  border: "1px solid #f1c36d",
+                  background: "#fff8ea"
+                }}
+              >
+                <strong>Importante</strong>
+                <p className="muted" style={{ marginBottom: 0 }}>
+                  No podrás enviar la postulación si no marcas la autorización para
+                  el uso de tus datos personales.
+                </p>
+              </div>
+            ) : null}
             <Toggle
               label="¿Puedes trabajar domingos y festivos?"
               registration={register("canWorkSundaysOrHolidays")}
