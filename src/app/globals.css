@@ -149,6 +149,7 @@ button {
   background: var(--surface-alt);
   border: 1px solid var(--line);
   font-size: 0.9rem;
+  max-width: 100%;
 }
 
 .header-bar {
@@ -158,6 +159,47 @@ button {
   backdrop-filter: blur(12px);
   background: rgba(251, 252, 253, 0.86);
   border-bottom: 1px solid rgba(216, 224, 230, 0.8);
+}
+
+.public-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.public-header-brand {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  flex: 1;
+  min-width: 0;
+}
+
+.public-header-nav {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.section-heading {
+  margin-bottom: 1.5rem;
+}
+
+.page-title {
+  font-size: clamp(2rem, 5vw, 3.3rem);
+  line-height: 1.02;
+  letter-spacing: -0.05em;
+  text-wrap: balance;
+}
+
+.hero-title {
+  margin: 0;
+  font-size: clamp(2.4rem, 7vw, 4.4rem);
+  line-height: 0.98;
+  letter-spacing: -0.06em;
+  text-wrap: balance;
 }
 
 .public-hero {
@@ -172,6 +214,16 @@ button {
 
 .public-summary {
   padding: 1.5rem;
+}
+
+.public-detail-card {
+  padding: 2rem;
+}
+
+.vacancy-card-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 }
 
 .admin-shell {
@@ -246,6 +298,42 @@ th {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.form-card {
+  padding: 1.5rem;
+}
+
+.application-steps {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 1.5rem;
+}
+
+.application-step {
+  padding: 0.9rem;
+}
+
+.review-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.form-actions-primary,
+.stack-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
 @media (max-width: 960px) {
   .public-hero-grid,
   .admin-shell,
@@ -260,3 +348,104 @@ th {
   }
 }
 
+@media (max-width: 640px) {
+  .container {
+    width: min(calc(100% - 1rem), var(--container));
+  }
+
+  .section {
+    padding: 1rem 0 1.25rem;
+  }
+
+  .card,
+  .public-summary,
+  .public-detail-card,
+  .form-card,
+  .admin-main {
+    border-radius: 20px;
+  }
+
+  .public-header-inner {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: 0.85rem 0;
+  }
+
+  .public-header-nav {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .public-header-nav .pill {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .page-title {
+    font-size: clamp(1.75rem, 9vw, 2.4rem);
+    line-height: 1.04;
+  }
+
+  .hero-title {
+    font-size: clamp(1.95rem, 11vw, 3rem);
+    line-height: 1.02;
+  }
+
+  .public-detail-card,
+  .form-card,
+  .public-summary {
+    padding: 1.1rem;
+  }
+
+  .application-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+
+  .application-step {
+    padding: 0.85rem 0.8rem;
+  }
+
+  .application-step strong,
+  .application-step .muted {
+    word-break: break-word;
+  }
+
+  .review-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vacancy-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions,
+  .form-actions-primary,
+  .stack-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .form-actions > .btn,
+  .form-actions-primary > .btn,
+  .stack-actions > .btn {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .pill {
+    white-space: normal;
+    justify-content: center;
+    text-align: center;
+  }
+
+  th,
+  td {
+    padding: 0.8rem 0.7rem;
+  }
+
+  .admin-main {
+    padding: 1rem;
+  }
+}

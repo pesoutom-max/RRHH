@@ -5,20 +5,12 @@ import { APP_NAME } from "@/lib/constants/app";
 export function PublicHeader() {
   return (
     <header className="header-bar">
-      <div
-        className="container"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "1rem 0"
-        }}
-      >
-        <Link href="/" style={{ fontWeight: 800, letterSpacing: "-0.03em" }}>
+      <div className="container public-header-inner">
+        <Link className="public-header-brand" href="/">
           {APP_NAME}
         </Link>
 
-        <nav style={{ display: "flex", gap: "0.75rem" }}>
+        <nav className="public-header-nav">
           <Link className="pill" href="/">
             Vacantes activas
           </Link>

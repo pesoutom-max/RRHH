@@ -41,9 +41,9 @@ export function ApplicationFlow({ vacancyId }: { vacancyId: string }) {
     <main className="page-shell">
       <section className="section">
         <div className="container grid">
-          <article className="card" style={{ padding: "2rem" }}>
+          <article className="card public-detail-card">
             <span className="pill">{vacancy.title}</span>
-            <h1>Formulario de postulación</h1>
+            <h1 className="hero-title">Formulario de postulación</h1>
             <p className="muted">
               Completa la información en pasos breves. Tu postulación se guardará
               en Firestore y se notificará al administrador al finalizar.
@@ -55,4 +55,3 @@ export function ApplicationFlow({ vacancyId }: { vacancyId: string }) {
     </main>
   );
 }
-

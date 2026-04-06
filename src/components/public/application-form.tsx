@@ -168,21 +168,13 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
   }
 
   return (
-    <div className="card" style={{ padding: "1.5rem" }}>
-      <div
-        style={{
-          display: "grid",
-          gap: "0.75rem",
-          gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-          marginBottom: "1.5rem"
-        }}
-      >
+    <div className="card form-card">
+      <div className="application-steps">
         {steps.map((step) => (
           <div
             key={step.id}
-            className="card"
+            className="card application-step"
             style={{
-              padding: "0.9rem",
               background: currentStep === step.id ? "var(--accent)" : "white"
             }}
           >
@@ -344,7 +336,7 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
                 Este es el paso final de revisión. Antes de enviar, vuelve atrás si
                 quieres completar o corregir información.
               </p>
-              <div className="two-columns">
+            <div className="review-grid">
                 {reviewItems.map(([label, value]) => (
                   <div key={label}>
                     <strong>{label}</strong>
@@ -406,19 +398,12 @@ export function ApplicationForm({ vacancy }: { vacancy: Vacancy }) {
           </div>
         ) : null}
 
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            gap: "0.75rem",
-            flexWrap: "wrap"
-          }}
-        >
+        <div className="form-actions">
           <Link className="btn btn-ghost" href={`/vacancies/${vacancy.slug}`}>
             Volver al aviso
           </Link>
 
-          <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+          <div className="form-actions-primary">
             {currentStep > 1 ? (
               <button
                 className="btn btn-ghost"

@@ -40,9 +40,9 @@ export function VacancyDetail({ slug }: { slug: string }) {
     <main className="page-shell">
       <section className="section">
         <div className="container grid">
-          <article className="card" style={{ padding: "2rem" }}>
+          <article className="card public-detail-card">
             <span className="pill">{vacancy.location}</span>
-            <h1>{vacancy.title}</h1>
+            <h1 className="page-title">{vacancy.title}</h1>
             <p className="muted">{vacancy.description}</p>
 
             <div className="three-columns" style={{ margin: "1.5rem 0" }}>
@@ -79,7 +79,7 @@ export function VacancyDetail({ slug }: { slug: string }) {
               </section>
             </div>
 
-            <div style={{ marginTop: "1.5rem" }}>
+            <div className="stack-actions" style={{ marginTop: "1.5rem" }}>
               <Link className="btn btn-primary" href={`/apply/${vacancy.id}`}>
                 Postular ahora
               </Link>
@@ -90,4 +90,3 @@ export function VacancyDetail({ slug }: { slug: string }) {
     </main>
   );
 }
-

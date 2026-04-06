@@ -26,8 +26,8 @@ export function PublicHome() {
     <main className="page-shell">
       <section className="section">
         <div className="container">
-          <div style={{ marginBottom: "1.5rem" }}>
-            <h1 style={{ margin: 0 }}>Vacantes activas</h1>
+          <div className="section-heading">
+            <h1 className="page-title" style={{ margin: 0 }}>Vacantes activas</h1>
             <p className="muted">Postulaciones abiertas para publicación real.</p>
           </div>
 
@@ -44,7 +44,7 @@ export function PublicHome() {
               No hay vacantes activas publicadas todavía.
             </div>
           ) : (
-            <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}>
+            <div className="vacancy-card-grid">
               {vacancies.map((vacancy) => (
                 <VacancyCard key={vacancy.id} vacancy={vacancy} />
               ))}
