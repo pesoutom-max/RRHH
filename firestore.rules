@@ -71,7 +71,7 @@ service cloud.firestore {
       allow read: if resource.data.status == 'active' || isAdmin();
 
       // Solo administración crea o modifica vacantes.
-      allow create, update, delete: if isAdmin()
+      allow create, update: if isAdmin()
         && request.resource.data.title is string
         && request.resource.data.slug is string
         && request.resource.data.description is string
@@ -81,6 +81,7 @@ service cloud.firestore {
         && request.resource.data.location is string
         && request.resource.data.salary is string
         && isValidVacancyStatus(request.resource.data.status);
+      allow delete: if isAdmin();
     }
 
     match /applications/{applicationId} {
@@ -91,8 +92,9 @@ service cloud.firestore {
       allow create: if validApplicationCreate();
 
       // Actualizaciones reservadas para el panel admin.
-      allow update, delete: if isAdmin()
+      allow update: if isAdmin()
         && isValidStatus(request.resource.data.status);
+      allow delete: if isAdmin();
     }
 
     match /admin_users/{userId} {

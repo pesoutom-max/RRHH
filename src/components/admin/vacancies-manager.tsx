@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import type { Vacancy } from "@/types";
 import {
   createVacancy,
+  deleteVacancy,
   listAdminVacancies,
   updateVacancy
 } from "@/lib/firebase/firestore-services";
@@ -19,6 +20,7 @@ export function VacanciesManager() {
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
   const [editing, setEditing] = useState<Vacancy | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState("");
 
   const {
     register,
@@ -42,6 +44,30 @@ export function VacanciesManager() {
   async function refresh() {
     const items = await listAdminVacancies();
     setVacancies(items);
+  }
+
+  async function handleDelete(vacancy: Vacancy) {
+    const confirmed = window.confirm(
+      `¿Eliminar la vacante "${vacancy.title}"? Esta acción no se puede deshacer.`
+    );
+
+    if (!confirmed || !vacancy.id) {
+      return;
+    }
+
+    setDeletingId(vacancy.id);
+
+    try {
+      await deleteVacancy(vacancy.id);
+      setVacancies((current) => current.filter((item) => item.id !== vacancy.id));
+
+      if (editing?.id === vacancy.id) {
+        setEditing(null);
+        reset();
+      }
+    } finally {
+      setDeletingId("");
+    }
   }
 
   useEffect(() => {
@@ -153,7 +179,7 @@ export function VacanciesManager() {
                 <th>Ubicación</th>
                 <th>Horario</th>
                 <th>Estado</th>
-                <th></th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -164,25 +190,43 @@ export function VacanciesManager() {
                   <td>{vacancy.schedule}</td>
                   <td>{vacancy.status}</td>
                   <td>
-                    <button
-                      className="btn btn-secondary"
-                      onClick={() => {
-                        setEditing(vacancy);
-                        reset({
-                          title: vacancy.title,
-                          description: vacancy.description,
-                          responsibilitiesText: vacancy.responsibilities.join("\n"),
-                          requirementsText: vacancy.requirements.join("\n"),
-                          schedule: vacancy.schedule,
-                          location: vacancy.location,
-                          salary: vacancy.salary,
-                          status: vacancy.status
-                        });
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "0.5rem",
+                        justifyContent: "flex-end",
+                        flexWrap: "wrap"
                       }}
-                      type="button"
                     >
-                      Editar
-                    </button>
+                      <button
+                        className="btn btn-secondary"
+                        onClick={() => {
+                          setEditing(vacancy);
+                          reset({
+                            title: vacancy.title,
+                            description: vacancy.description,
+                            responsibilitiesText: vacancy.responsibilities.join("\n"),
+                            requirementsText: vacancy.requirements.join("\n"),
+                            schedule: vacancy.schedule,
+                            location: vacancy.location,
+                            salary: vacancy.salary,
+                            status: vacancy.status
+                          });
+                        }}
+                        type="button"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        className="btn btn-ghost"
+                        disabled={deletingId === vacancy.id}
+                        onClick={() => handleDelete(vacancy)}
+                        style={{ color: "#b42318" }}
+                        type="button"
+                      >
+                        {deletingId === vacancy.id ? "Eliminando..." : "Eliminar"}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

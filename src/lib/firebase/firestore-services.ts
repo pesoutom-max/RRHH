@@ -3,6 +3,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -189,6 +190,10 @@ export async function updateVacancy(
   });
 }
 
+export async function deleteVacancy(vacancyId: string) {
+  await deleteDoc(doc(vacanciesCollection, vacancyId));
+}
+
 export async function updateApplicationAdminState(
   applicationId: string,
   updates: Partial<Pick<Application, "adminNotes" | "status">>
@@ -197,6 +202,10 @@ export async function updateApplicationAdminState(
     ...updates,
     updatedAt: serverTimestamp()
   });
+}
+
+export async function deleteApplication(applicationId: string) {
+  await deleteDoc(doc(applicationsCollection, applicationId));
 }
 
 export async function listAdminVacancies(status?: VacancyStatus) {

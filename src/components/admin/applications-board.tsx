@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import type { Application, Vacancy } from "@/types";
 import {
+  deleteApplication,
   listAdminApplications,
   listAdminVacancies
 } from "@/lib/firebase/firestore-services";
@@ -15,6 +16,7 @@ export function ApplicationsBoard() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deletingId, setDeletingId] = useState("");
   const [filters, setFilters] = useState({
     vacancyId: "",
     status: "",
@@ -53,6 +55,25 @@ export function ApplicationsBoard() {
       );
     });
   }, [applications, filters]);
+
+  async function handleDelete(applicationId: string, fullName: string) {
+    const confirmed = window.confirm(
+      `¿Eliminar la postulación de ${fullName}? Esta acción no se puede deshacer.`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setDeletingId(applicationId);
+
+    try {
+      await deleteApplication(applicationId);
+      setApplications((current) => current.filter((item) => item.id !== applicationId));
+    } finally {
+      setDeletingId("");
+    }
+  }
 
   return (
     <div className="grid">
@@ -181,7 +202,7 @@ export function ApplicationsBoard() {
                 <th>Fecha</th>
                 <th>Estado</th>
                 <th>Score</th>
-                <th></th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -200,9 +221,27 @@ export function ApplicationsBoard() {
                   </td>
                   <td>{item.score ?? "-"}</td>
                   <td>
-                    <Link className="btn btn-secondary" href={`/applications/${item.id}`}>
-                      Ver ficha
-                    </Link>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "0.5rem",
+                        justifyContent: "flex-end",
+                        flexWrap: "wrap"
+                      }}
+                    >
+                      <Link className="btn btn-secondary" href={`/applications/${item.id}`}>
+                        Ver ficha
+                      </Link>
+                      <button
+                        className="btn btn-ghost"
+                        disabled={deletingId === item.id}
+                        onClick={() => handleDelete(item.id ?? "", item.fullName)}
+                        style={{ color: "#b42318" }}
+                        type="button"
+                      >
+                        {deletingId === item.id ? "Eliminando..." : "Eliminar"}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

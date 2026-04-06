@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import type { Application } from "@/types";
 import { auth } from "@/lib/firebase/client";
 import {
+  deleteApplication,
   getApplicationById,
   updateApplicationAdminState
 } from "@/lib/firebase/firestore-services";
@@ -13,11 +15,13 @@ import { APPLICATION_STATUS_LABELS } from "@/lib/constants/app";
 import { formatDate } from "@/lib/utils/format";
 
 export function ApplicationDetail({ applicationId }: { applicationId: string }) {
+  const router = useRouter();
   const [application, setApplication] = useState<Application | null>(null);
   const [notes, setNotes] = useState("");
   const [status, setStatus] = useState<Application["status"]>("new");
   const [saving, setSaving] = useState(false);
   const [cvLoading, setCvLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     getApplicationById(applicationId).then((item) => {
@@ -172,6 +176,28 @@ export function ApplicationDetail({ applicationId }: { applicationId: string }) 
               type="button"
             >
               {saving ? "Guardando..." : "Guardar cambios"}
+            </button>
+            <button
+              className="btn btn-ghost"
+              disabled={deleting}
+              onClick={async () => {
+                const confirmed = window.confirm(
+                  `¿Eliminar la postulación de ${application.fullName}? Esta acción no se puede deshacer.`
+                );
+
+                if (!confirmed) {
+                  return;
+                }
+
+                setDeleting(true);
+                await deleteApplication(applicationId);
+                router.push("/applications");
+                router.refresh();
+              }}
+              style={{ color: "#b42318" }}
+              type="button"
+            >
+              {deleting ? "Eliminando..." : "Eliminar postulación"}
             </button>
           </div>
         </article>
