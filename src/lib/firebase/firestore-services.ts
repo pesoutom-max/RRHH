@@ -314,6 +314,7 @@ export async function getDashboardStats() {
     total: items.length,
     new: countByStatus(items, "new"),
     reviewing: countByStatus(items, "reviewing"),
+    reviewed: countByStatus(items, "reviewed"),
     shortlisted: countByStatus(items, "shortlisted"),
     rejected: countByStatus(items, "rejected"),
     hired: countByStatus(items, "hired")

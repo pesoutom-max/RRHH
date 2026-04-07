@@ -13,7 +13,7 @@ service cloud.firestore {
     }
 
     function isValidStatus(status) {
-      return status in ['new', 'reviewing', 'shortlisted', 'rejected', 'hired'];
+      return status in ['new', 'reviewing', 'reviewed', 'shortlisted', 'rejected', 'hired'];
     }
 
     function isValidVacancyStatus(status) {

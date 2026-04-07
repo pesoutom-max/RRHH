@@ -20,6 +20,7 @@ export function DashboardContent() {
     total: number;
     new: number;
     reviewing: number;
+    reviewed: number;
     shortlisted: number;
     rejected: number;
     hired: number;

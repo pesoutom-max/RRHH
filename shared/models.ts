@@ -2,6 +2,7 @@ export type VacancyStatus = "active" | "inactive" | "closed";
 export type ApplicationStatus =
   | "new"
   | "reviewing"
+  | "reviewed"
   | "shortlisted"
   | "rejected"
   | "hired";
