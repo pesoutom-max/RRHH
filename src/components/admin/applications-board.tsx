@@ -23,6 +23,7 @@ export function ApplicationsBoard() {
   const [deletingId, setDeletingId] = useState("");
   const [cvAvailability, setCvAvailability] = useState<Record<string, boolean>>({});
   const [filters, setFilters] = useState({
+    name: "",
     vacancyId: "",
     status: "",
     comuna: "",
@@ -60,6 +61,8 @@ export function ApplicationsBoard() {
       const dateText = formatDate(item.appliedAt);
 
       return (
+        (!filters.name ||
+          item.fullName.toLowerCase().includes(filters.name.toLowerCase())) &&
         (!filters.vacancyId || item.vacancyId === filters.vacancyId) &&
         (!filters.status || item.status === filters.status) &&
         (!filters.comuna ||
@@ -98,6 +101,17 @@ export function ApplicationsBoard() {
     <div className="grid">
       <section className="card" style={{ padding: "1rem" }}>
         <div className="three-columns">
+          <div className="field">
+            <label>Nombre postulante</label>
+            <input
+              onChange={(event) =>
+                setFilters((current) => ({ ...current, name: event.target.value }))
+              }
+              placeholder="Ej. María Pérez"
+              value={filters.name}
+            />
+          </div>
+
           <div className="field">
             <label>Vacante</label>
             <select
