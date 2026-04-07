@@ -170,8 +170,13 @@ export function ApplicationDetail({ applicationId }: { applicationId: string }) 
           </div>
 
           <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-            <a className="btn btn-secondary" href={`tel:${application.phone}`}>
-              Ver teléfono
+            <a
+              className="btn btn-secondary"
+              href={`https://wa.me/${toWhatsappPhone(application.phone)}`}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Abrir WhatsApp
             </a>
             <button
               className="btn btn-secondary"
@@ -306,4 +311,14 @@ function ScoreDetailItem({ score }: { score: number | null }) {
       </div>
     </div>
   );
+}
+
+function toWhatsappPhone(phone: string) {
+  const digits = phone.replace(/\D/g, "");
+
+  if (!digits) {
+    return "";
+  }
+
+  return digits.startsWith("56") ? digits : `56${digits.replace(/^0+/, "")}`;
 }
