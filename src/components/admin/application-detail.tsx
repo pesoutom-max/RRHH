@@ -228,6 +228,9 @@ export function ApplicationDetail({ applicationId }: { applicationId: string }) 
             >
               {saving ? "Guardando..." : "Guardar cambios"}
             </button>
+            <Link className="btn btn-ghost" href="/applications">
+              Salir
+            </Link>
             <button
               className="btn btn-ghost"
               disabled={deleting}
