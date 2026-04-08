@@ -16,6 +16,27 @@ import {
 } from "@/lib/constants/app";
 import { formatDate } from "@/lib/utils/format";
 
+function normalizeSearchText(value: string) {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+function matchesNameSearch(fullName: string, query: string) {
+  const normalizedQuery = normalizeSearchText(query);
+
+  if (!normalizedQuery) {
+    return true;
+  }
+
+  const normalizedName = normalizeSearchText(fullName);
+  const terms = normalizedQuery.split(/\s+/).filter(Boolean);
+
+  return terms.every((term) => normalizedName.includes(term));
+}
+
 export function ApplicationsBoard() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [vacancies, setVacancies] = useState<Vacancy[]>([]);
@@ -61,8 +82,7 @@ export function ApplicationsBoard() {
       const dateText = formatDate(item.appliedAt);
 
       return (
-        (!filters.name ||
-          item.fullName.toLowerCase().includes(filters.name.toLowerCase())) &&
+        matchesNameSearch(item.fullName, filters.name) &&
         (!filters.vacancyId || item.vacancyId === filters.vacancyId) &&
         (!filters.status || item.status === filters.status) &&
         (!filters.comuna ||
@@ -229,12 +249,11 @@ export function ApplicationsBoard() {
               <tr>
                 <th>Nombre</th>
                 <th>Cargo</th>
-                <th>Email</th>
-                <th>Teléfono</th>
-                <th>Comuna</th>
-                <th>Fecha</th>
+                <th>Fecha postulación</th>
+                <th>Último ingreso</th>
                 <th>Estado</th>
                 <th>Score</th>
+                <th>Notas</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -250,10 +269,8 @@ export function ApplicationsBoard() {
                     </div>
                   </td>
                   <td>{item.vacancyTitle}</td>
-                  <td>{item.email}</td>
-                  <td>{item.phone}</td>
-                  <td>{item.comuna}</td>
                   <td>{formatDate(item.appliedAt)}</td>
+                  <td>{formatDate(item.updatedAt)}</td>
                   <td>
                     <span className={APPLICATION_STATUS_CLASSNAMES[item.status]}>
                       {APPLICATION_STATUS_LABELS[item.status]}
@@ -261,6 +278,11 @@ export function ApplicationsBoard() {
                   </td>
                   <td>
                     <ScoreBadge score={item.score} />
+                  </td>
+                  <td>
+                    <div className="notes-preview">
+                      {item.adminNotes?.trim() ? item.adminNotes : "Sin notas"}
+                    </div>
                   </td>
                   <td>
                     <div
